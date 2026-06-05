@@ -80,7 +80,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 relative">
                     <!-- العملة الأساسية (من) -->
                     <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 focus-within:border-emerald-500 focus-within:bg-white transition-all">
-                        <label class="block text-xs font-bold text-gray-500 mb-1">من العملة الأساسية</label>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">من العملة الأجنبية</label>
                         <select id="from-currency" class="w-full bg-transparent font-medium text-gray-800 focus:outline-none pt-1">
                             <!-- يتم تعبئتها ديناميكياً -->
                         </select>
@@ -93,7 +93,7 @@
 
                     <!-- العملة المستهدفة (إلى) -->
                     <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 focus-within:border-emerald-500 focus-within:bg-white transition-all">
-                        <label class="block text-xs font-bold text-gray-500 mb-1">إلى العملة المقابلة</label>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">إلى العملة الأساسية</label>
                         <select id="to-currency" class="w-full bg-transparent font-medium text-gray-800 focus:outline-none pt-1">
                             <!-- يتم تعبئتها ديناميكياً -->
                         </select>
@@ -102,10 +102,10 @@
 
                 <!-- شاشة عرض النتيجة الكبيرة -->
                 <div class="bg-gradient-to-br from-emerald-900 to-emerald-950 text-white rounded-2xl p-6 text-center shadow-md mt-4">
-                    <span id="rate-summary-text" class="block text-xs text-emerald-300 font-number mb-2 tracking-wide">1 SAR = 1 SAR</span>
+                    <span id="rate-summary-text" class="block text-xs text-emerald-300 font-number mb-2 tracking-wide">1 USD = 3.7500 SAR</span>
                     <div class="flex justify-center items-baseline gap-2 overflow-hidden">
                         <span id="result-display" class="text-4xl font-bold font-number tracking-tight">0.00</span>
-                        <span id="result-symbol" class="text-sm font-bold text-amber-400 bg-emerald-800/60 px-2 py-0.5 rounded-md uppercase font-number">USD</span>
+                        <span id="result-symbol" class="text-sm font-bold text-amber-400 bg-emerald-800/60 px-2 py-0.5 rounded-md uppercase font-number">SAR</span>
                     </div>
                 </div>
             </div>
@@ -115,8 +115,8 @@
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
             <div class="flex justify-between items-center mb-5">
                 <div>
-                    <h3 class="text-md font-bold text-gray-800">أسعار الصرف الفورية</h3>
-                    <p class="text-[11px] text-gray-400 mt-0.5">مقارنة بالنسبة للعملة الأساسية المختارة</p>
+                    <h3 class="text-md font-bold text-gray-800">أسعار الصرف مقابل الريال السعودي</h3>
+                    <p class="text-[11px] text-gray-400 mt-0.5">قيمة العملات العالمية مباشرة مقابل الـ SAR</p>
                 </div>
                 <button id="open-modal-btn" class="text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/50 px-3 py-2 rounded-xl transition-colors font-bold flex items-center gap-1">
                     <span>➕</span> إضافة عملة
@@ -125,7 +125,7 @@
 
             <!-- قائمة عرض كروت العملات المفضلة -->
             <div id="favorites-container" class="space-y-2.5">
-                <!-- توليد الكروت برمجياً -->
+                <!-- توليد الكروت برمجياً لتظهر مقابل الريال السعودي دائماً -->
             </div>
             
             <!-- طابع وقت التحديث الأخير -->
@@ -139,13 +139,13 @@
 
     </main>
 
-    <!-- الفوتر الاحترافي حسب الطلب -->
+    <!-- الفوتر الاحترافي -->
     <footer class="text-center py-4 text-xs text-gray-400 border-t border-gray-100 font-number bg-white">
         Yousef Effendi Intelligent Platform © 2026 | <span class="font-medium text-gray-500">half of third</span>
     </footer>
 
     <!-- مودال اختيار وإضافة عملات جديدة -->
-    <div id="currency-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center p-4 hidden z-50 backdrop-blur-sm transition-all animate-fade-in">
+    <div id="currency-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center p-4 hidden z-50 backdrop-blur-sm transition-all">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-gray-100">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-md font-bold text-gray-900">إضافة عملة جديدة</h3>
@@ -167,14 +167,14 @@
     <!-- كود البرمجة والذكاء الاصطناعي الخاص بالتطبيق -->
     <script>
         const API_URL = "https://open.er-api.com/v6/latest/SAR";
-        let favoriteCurrencies = ['SAR', 'USD', 'EUR', 'GBP', 'BAM'];
-        let sarExchangeRates = { "SAR": 1.0, "USD": 0.2666, "EUR": 0.2452, "GBP": 0.2095, "BAM": 0.4796 };
+        let favoriteCurrencies = ['SAR', 'USD', 'EUR', 'GBP', 'AED', 'KWD', 'EGP', 'TRY'];
+        let sarExchangeRates = { "SAR": 1.0, "USD": 0.2666, "EUR": 0.2452, "GBP": 0.2095, "AED": 0.9792, "KWD": 0.0819 };
 
         const currencyArabicNames = {
             'SAR': 'ريال سعودي', 'USD': 'دولار أمريكي', 'EUR': 'يورو أوروبي',
-            'GBP': 'جنيه إسترليني', 'BAM': 'مارك بوسني', 'AED': 'درهم إماراتي',
-            'KWD': 'دينار كويتي', 'BHD': 'دينار بحريني', 'OMR': 'ريال عماني',
-            'QAR': 'ريال قطرري', 'EGP': 'جنيه مصري', 'TRY': 'ليرة تركية',
+            'GBP': 'جنيه إسترليني', 'AED': 'درهم إماراتي', 'KWD': 'دينار كويتي', 
+            'BHD': 'دينار بحريني', 'OMR': 'ريال عماني', 'QAR': 'ريال قطري', 
+            'EGP': 'جنيه مصري', 'TRY': 'ليرة تركية', 'BAM': 'مارك بوسني',
             'CAD': 'دولار كندي', 'AUD': 'دولار أسترالي', 'JPY': 'ين ياباني', 'CNY': 'يوان صيني'
         };
 
@@ -199,8 +199,8 @@
         const addCurrencyConfirm = document.getElementById('add-currency-confirm');
         const allCurrenciesDropdown = document.getElementById('all-currencies-dropdown');
 
-        if (localStorage.getItem('yousef_favs')) {
-            favoriteCurrencies = JSON.parse(localStorage.getItem('yousef_favs'));
+        if (localStorage.getItem('yousef_favs_v2')) {
+            favoriteCurrencies = JSON.parse(localStorage.getItem('yousef_favs_v2'));
         }
 
         async function fetchExchangeData() {
@@ -210,12 +210,12 @@
                 const data = await response.json();
                 sarExchangeRates = data.rates;
                 
-                localStorage.setItem('yousef_cached_rates', JSON.stringify(sarExchangeRates));
-                localStorage.setItem('yousef_cached_time', new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
+                localStorage.setItem('yousef_cached_rates_v2', JSON.stringify(sarExchangeRates));
+                localStorage.setItem('yousef_cached_time_v2', new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
                 setNetworkUI(true);
             } catch (error) {
-                const localRates = localStorage.getItem('yousef_cached_rates');
-                const localTime = localStorage.getItem('yousef_cached_time');
+                const localRates = localStorage.getItem('yousef_cached_rates_v2');
+                const localTime = localStorage.getItem('yousef_cached_time_v2');
                 if (localRates) {
                     sarExchangeRates = JSON.parse(localRates);
                     setNetworkUI(false, localTime || "Saved Cache");
@@ -243,8 +243,9 @@
         }
 
         function buildCurrencySelectors() {
-            const currentFrom = fromCurrencySelect.value || 'SAR';
-            const currentTo = toCurrencySelect.value || 'USD';
+            // تحديد الحالات الابتدائية الافتراضية بناءً على طلبك (التحويل إلى ريال سعودي هو الأساس)
+            const currentFrom = fromCurrencySelect.value || 'USD'; 
+            const currentTo = toCurrencySelect.value || 'SAR'; 
 
             fromCurrencySelect.innerHTML = '';
             toCurrencySelect.innerHTML = '';
@@ -277,6 +278,8 @@
 
             const rateFromSAR = sarExchangeRates[from];
             const rateToSAR = sarExchangeRates[to];
+            
+            // معادلة الحساب الرياضية الدقيقة بناءً على قاعدة بيانات الريال السعودي
             const result = (amount / rateFromSAR) * rateToSAR;
             const singleCrossRate = (1 / rateFromSAR) * rateToSAR;
 
@@ -287,26 +290,25 @@
 
         function renderFavoritesDashboard() {
             favoritesContainer.innerHTML = '';
-            const currentBase = fromCurrencySelect.value || 'SAR';
-            const baseRateInSAR = sarExchangeRates[currentBase];
 
+            // بناء الكروت السفلية لتكون مربوطة ومحسوبة مباشرة "مقابل الريال السعودي" كما طلبت
             favoriteCurrencies.forEach(currencyCode => {
-                if (currencyCode === currentBase) return;
+                if (currencyCode === 'SAR') return; // لا نحتاج لعرض الريال مقابل نفسه
 
                 const targetRateInSAR = sarExchangeRates[currencyCode];
-                const crossRate = (1 / baseRateInSAR) * targetRateInSAR;
+                const crossRateToSAR = 1 / targetRateInSAR; // حساب كم يساوي هذا الصرف بالريال السعودي
                 const arabicName = currencyArabicNames[currencyCode] || 'عملة أجنبية';
 
                 const card = document.createElement('div');
                 card.className = "flex justify-between items-center p-3.5 bg-gray-50/70 hover:bg-emerald-50/40 border border-gray-100 rounded-2xl transition-all group duration-300";
                 card.innerHTML = `
                     <div class="flex flex-col">
-                        <span class="font-bold text-gray-900 font-number text-sm tracking-wide">${currencyCode}</span>
+                        <span class="font-bold text-gray-900 font-number text-sm tracking-wide">1 ${currencyCode}</span>
                         <span class="text-[11px] text-gray-400 group-hover:text-emerald-700 transition-colors">${arabicName}</span>
                     </div>
                     <div class="text-left flex flex-col items-end">
-                        <span class="font-number font-bold text-emerald-700 text-md tracking-tight">${crossRate.toFixed(4)}</span>
-                        <span class="text-[9px] text-gray-400 font-number uppercase">مقابل 1 ${currentBase}</span>
+                        <span class="font-number font-bold text-emerald-700 text-md tracking-tight">${crossRateToSAR.toFixed(4)}</span>
+                        <span class="text-[9px] text-gray-400 font-number font-bold text-amber-600">ريال سعودي (SAR)</span>
                     </div>
                 `;
                 favoritesContainer.appendChild(card);
@@ -314,10 +316,7 @@
         }
 
         amountInput.addEventListener('input', performCalculation);
-        fromCurrencySelect.addEventListener('change', () => {
-            performCalculation();
-            renderFavoritesDashboard();
-        });
+        fromCurrencySelect.addEventListener('change', performCalculation);
         toCurrencySelect.addEventListener('change', performCalculation);
 
         swapBtn.addEventListener('click', () => {
@@ -325,7 +324,6 @@
             fromCurrencySelect.value = toCurrencySelect.value;
             toCurrencySelect.value = temp;
             performCalculation();
-            renderFavoritesDashboard();
         });
 
         openModalBtn.addEventListener('click', () => currencyModal.classList.remove('hidden'));
@@ -337,7 +335,7 @@
             const selectedCurrency = allCurrenciesDropdown.value;
             if (selectedCurrency && !favoriteCurrencies.includes(selectedCurrency)) {
                 favoriteCurrencies.push(selectedCurrency);
-                localStorage.setItem('yousef_favs', JSON.stringify(favoriteCurrencies));
+                localStorage.setItem('yousef_favs_v2', JSON.stringify(favoriteCurrencies));
                 buildCurrencySelectors();
                 performCalculation();
                 renderFavoritesDashboard();
