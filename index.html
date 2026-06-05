@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>يوسف أفندي | محول العملات الذكي</title>
+    
+    <!-- الأيقونة وشعار الصفحة عند الحفظ في الجوال -->
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    
+    <!-- الخطوط: Tajawal للمصوص العربية و Poppins للأرقام والإنجليزية -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS للتصميم الاحترافي -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f4f6f8;
+        }
+        .font-number {
+            font-family: 'Poppins', sans-serif;
+        }
+        /* إخفاء أسهم مدخلات الأرقام المتصفح الافتراضية */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen flex flex-col justify-between">
+
+    <!-- الهيدر والبار العلوي -->
+    <header class="bg-gradient-to-r from-emerald-900 to-emerald-800 text-white shadow-xl sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <!-- شعار التطبيق المرفق -->
+                <img src="logo.png" alt="شعار يوسف أفندي" class="w-12 h-12 object-contain bg-white rounded-xl p-1 shadow-inner onerror-fallback" onerror="this.src='https://placehold.co/100x100?text=Yousef'">
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">يوسف أفندي</h1>
+                    <p class="text-[10px] text-emerald-300 font-number tracking-wider uppercase">Yousef Effendi Premium</p>
+                </div>
+            </div>
+            
+            <!-- مؤشر حالة الشبكة لايف / أوفلاين -->
+            <div id="network-status" class="text-xs bg-emerald-950/60 border border-emerald-500/30 px-3 py-1.5 rounded-full flex items-center gap-2 transition-all">
+                <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse"></span>
+                <span id="status-text" class="font-medium">اتصال مباشر</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي لتطبيق الجوال والويب -->
+    <main class="max-w-xl w-full mx-auto p-4 flex-grow space-y-5">
+        
+        <!-- بطاقة التحويل الرئيسية -->
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-400 to-emerald-600"></div>
+            
+            <h2 class="text-lg font-bold mb-5 text-emerald-900 flex items-center gap-2">
+                <span>🔄</span> حاسبة التحويل الذكية
+            </h2>
+            
+            <div class="space-y-4">
+                <!-- إدخال المبلغ -->
+                <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 focus-within:border-emerald-500 focus-within:bg-white transition-all">
+                    <label class="block text-xs font-bold text-gray-500 mb-1">المبلغ المراد تحويله</label>
+                    <input type="number" id="amount-input" value="100" class="w-full bg-transparent font-number font-bold text-2xl text-left focus:outline-none text-emerald-900" placeholder="0.00">
+                </div>
+
+                <!-- خيارات العملات (من وإلى) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 relative">
+                    <!-- العملة الأساسية (من) -->
+                    <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 focus-within:border-emerald-500 focus-within:bg-white transition-all">
+                        <label class="block text-xs font-bold text-gray-500 mb-1">من العملة الأساسية</label>
+                        <select id="from-currency" class="w-full bg-transparent font-medium text-gray-800 focus:outline-none pt-1">
+                            <!-- يتم تعبئتها ديناميكياً -->
+                        </select>
+                    </div>
+
+                    <!-- زر عكس العملات السريع -->
+                    <button id="swap-btn" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-amber-500 hover:bg-amber-600 text-white rounded-full flex items-center justify-center shadow-md transition-transform active:scale-95 z-10 border-4 border-white">
+                        ⇅
+                    </button>
+
+                    <!-- العملة المستهدفة (إلى) -->
+                    <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 focus-within:border-emerald-500 focus-within:bg-white transition-all">
+                        <label class="block text-xs font-bold text-gray-500 mb-1">إلى العملة المقابلة</label>
+                        <select id="to-currency" class="w-full bg-transparent font-medium text-gray-800 focus:outline-none pt-1">
+                            <!-- يتم تعبئتها ديناميكياً -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- شاشة عرض النتيجة الكبيرة -->
+                <div class="bg-gradient-to-br from-emerald-900 to-emerald-950 text-white rounded-2xl p-6 text-center shadow-md mt-4">
+                    <span id="rate-summary-text" class="block text-xs text-emerald-300 font-number mb-2 tracking-wide">1 SAR = 1 SAR</span>
+                    <div class="flex justify-center items-baseline gap-2 overflow-hidden">
+                        <span id="result-display" class="text-4xl font-bold font-number tracking-tight">0.00</span>
+                        <span id="result-symbol" class="text-sm font-bold text-amber-400 bg-emerald-800/60 px-2 py-0.5 rounded-md uppercase font-number">USD</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- لوحة مراقبة أسعار الصرف الحية والعملات المفضلة -->
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+            <div class="flex justify-between items-center mb-5">
+                <div>
+                    <h3 class="text-md font-bold text-gray-800">أسعار الصرف الفورية</h3>
+                    <p class="text-[11px] text-gray-400 mt-0.5">مقارنة بالنسبة للعملة الأساسية المختارة</p>
+                </div>
+                <button id="open-modal-btn" class="text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/50 px-3 py-2 rounded-xl transition-colors font-bold flex items-center gap-1">
+                    <span>➕</span> إضافة عملة
+                </button>
+            </div>
+
+            <!-- قائمة عرض كروت العملات المفضلة -->
+            <div id="favorites-container" class="space-y-2.5">
+                <!-- توليد الكروت برمجياً -->
+            </div>
+            
+            <!-- طابع وقت التحديث الأخير -->
+            <div class="text-center mt-5 pt-3 border-t border-gray-50">
+                <span id="last-update-label" class="text-[11px] text-gray-400 font-number flex justify-center items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                    Last Sync: Live Updated
+                </span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- الفوتر الاحترافي حسب الطلب -->
+    <footer class="text-center py-4 text-xs text-gray-400 border-t border-gray-100 font-number bg-white">
+        Yousef Effendi Intelligent Platform © 2026 | <span class="font-medium text-gray-500">half of third</span>
+    </footer>
+
+    <!-- مودال اختيار وإضافة عملات جديدة -->
+    <div id="currency-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center p-4 hidden z-50 backdrop-blur-sm transition-all animate-fade-in">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-gray-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-md font-bold text-gray-900">إضافة عملة جديدة</h3>
+                <button id="close-modal-x" class="text-gray-400 hover:text-gray-600 text-lg">✕</button>
+            </div>
+            <p class="text-xs text-gray-500 mb-4">اختر عملة من القائمة العالمية لإضافتها للوحة المتابعة السريعة لديك.</p>
+            
+            <select id="all-currencies-dropdown" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl mb-5 text-sm focus:outline-none focus:border-emerald-500 font-number">
+                <!-- خيارات كل عملات العالم -->
+            </select>
+            
+            <div class="flex gap-2.5">
+                <button id="add-currency-confirm" class="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white py-3 rounded-xl text-sm font-bold shadow-sm transition-colors">إضافة لقائمتي</button>
+                <button id="add-currency-cancel" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 py-3 rounded-xl text-sm font-medium transition-colors">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- كود البرمجة والذكاء الاصطناعي الخاص بالتطبيق -->
+    <script>
+        // الرابط الأساسي المستقر والمدعوم عالمياً (الريال السعودي هو حجر الأساس للربط والمزامنة الشاملة)
+        const API_URL = "https://open.er-api.com/v6/latest/SAR";
+        
+        // العملات الافتراضية المحددة في الطلب
+        let favoriteCurrencies = ['SAR', 'USD', 'EUR', 'GBP', 'BAM'];
+        
+        // قاعدة البيانات المحلية لأسعار الصرف مقابل الريال السعودي (SAR)
+        let sarExchangeRates = { "SAR": 1.0, "USD": 0.2666, "EUR": 0.2452, "GBP": 0.2095, "BAM": 0.4796 };
+
+        // القاموس العربي لأسماء العملات للواجهة الاحترافية
+        const currencyArabicNames = {
+            'SAR': 'ريال سعودي',
+            'USD': 'دولار أمريكي',
+            'EUR': 'يورو أوروبي',
+            'GBP': 'جنيه إسترليني',
+            'BAM': 'مارك بوسني',
+            'AED': 'درهم إماراتي',
+            'KWD': 'دينار كويتي',
+            'BHD': 'دينار بحريني',
+            'OMR': 'ريال عماني',
+            'QAR': 'ريال قطري',
+            'EGP': 'جنيه مصري',
+            'TRY': 'ليرة تركية',
+            'CAD': 'دولار كندي',
+            'AUD': 'دولار أسترالي',
+            'JPY': 'ين ياباني',
+            'CNY': 'يوان صيني'
+        };
+
+        // ربط عناصر واجهة المستخدم بالمتغيرات البرمجية
+        const amountInput = document.getElementById('amount-input');
+        const fromCurrencySelect = document.getElementById('from-currency');
+        const toCurrencySelect = document.getElementById('to-currency');
+        const resultDisplay = document.getElementById('result-display');
+        const resultSymbol = document.getElementById('result-symbol');
+        const rateSummaryText = document.getElementById('rate-summary-text');
+        const favoritesContainer = document.getElementById('favorites-container');
+        const swapBtn = document.getElementById('swap-btn');
+        
+        const networkStatus = document.getElementById('network-status');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        const lastUpdateLabel = document.getElementById('last-update-label');
+        
+        const currencyModal = document.getElementById('currency-modal');
+        const openModalBtn = document.getElementById('open-modal-btn');
+        const closeModalX = document.getElementById('close-modal-x');
+        const addCurrencyCancel = document.getElementById('add-currency-cancel');
+        const addCurrencyConfirm = document.getElementById('add-currency-confirm');
+        const allCurrenciesDropdown = document.getElementById('all-currencies-dropdown');
+
+        // استرجاع المفضلات المخزنة مسبقاً إن وجدت لراحة المستخدم
+        if (localStorage.getItem('yousef_favs')) {
+            favoriteCurrencies = JSON.parse(localStorage.getItem('yousef_favs'));
+        }
+
+        // 1. وظيفة جلب البيانات من الـ API والتعامل الفوري الذكي مع الأوفلاين
+        async function fetchExchangeData() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error("فشل استجابة السيرفر");
+                
+                const data = await response.json();
+                sarExchangeRates = data.rates;
+                
+                // حفظ النسخة الأحدث محلياً في ذاكرة التخزين الداخلي للمتصفح/الجوال للعمل بدون إنترنت
+                localStorage.setItem('yousef_cached_rates', JSON.stringify(sarExchangeRates));
+                localStorage.setItem('yousef_cached_time', new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
+                
+                setNetworkUI(true);
+            } catch (error) {
+                console.warn("تنبيه: تم تفعيل وضع العمل بدون إنترنت (Offline Mode).");
+                const localRates = localStorage.getItem('yousef_cached_rates');
+                const localTime = localStorage.getItem('yousef_cached_time');
+                
+                if (localRates) {
+                    sarExchangeRates = JSON.parse(localRates);
+                    setNetworkUI(false, localTime || "Saved Cache");
+                } else {
+                    setNetworkUI(false, "No Connection");
+                }
+            }
+            
+            buildCurrencySelectors();
+            performCalculation();
+            renderFavoritesDashboard();
+        }
+
+        // تحديث مظهر مؤشر الشبكة (لايف أخضر / أوفلاين برتقالي)
+        function setNetworkUI(isOnline, timeString = '') {
+            if (isOnline) {
+                networkStatus.className = "text-xs bg-emerald-950/60 border border-emerald-500/30 px-3 py-1.5 rounded-full flex items-center gap-2";
+                statusDot.className = "w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse";
+                statusText.innerText = "اتصال مباشر";
+                lastUpdateLabel.innerText = "Last Sync: Live Rates Today";
+            } else {
+                networkStatus.className = "text-xs bg-amber-950/60 border border-amber-500/40 px-3 py-1.5 rounded-full flex items-center gap-2";
+                statusDot.className = "w-2.5 h-2.5 rounded-full bg-amber-400";
+                statusText.innerText = "وضع أوفلاين";
+                lastUpdateLabel.innerText = `Last Saved Sync: ${timeString}`;
+            }
+        }
+
+        // 2. بناء قوائم الاختيار (تلقائياً وبداية ذكية بالريال السعودي)
+        function buildCurrencySelectors() {
+            // حفظ الاختيارات الحالية للمستخدم حتى لا تضيع عند التحديث
+            const currentFrom = fromCurrencySelect.value || 'SAR';
+            const currentTo = toCurrencySelect.value || 'USD';
+
+            fromCurrencySelect.innerHTML = '';
+            toCurrencySelect.innerHTML = '';
+            allCurrenciesDropdown.innerHTML = '';
+
+            // تصنيف وتعبئة العملات المتاحة بالترتيب
+            Object.keys(sarExchangeRates).sort().forEach(currencyCode => {
+                const arabicName = currencyArabicNames[currencyCode] || 'عملة دولية أجنبية';
+                const optionText = `${currencyCode} - ${arabicName}`;
+                
+                // إضافة القائمة المفضلة للمستخدم في حاسبة التحويل
+                if (favoriteCurrencies.includes(currencyCode)) {
+                    const optFrom = new Option(optionText, currencyCode);
+                    const optTo = new Option(optionText, currencyCode);
+                    fromCurrencySelect.add(optFrom);
+                    toCurrencySelect.add(optTo);
+                }
+
+                // إضافة كافة عملات العالم للمودال لإتاحة حرية التوسيع والزيادة
+                const optModal = new Option(optionText, currencyCode);
+                allCurrenciesDropdown.add(optModal);
+            });
+
+            // تعيين الاختيارات وتأكيد البداية بالريال السعودي كما طلبتم
+            fromCurrencySelect.value = currentFrom;
+            toCurrencySelect.value = currentTo;
+        }
+
+        // 3. معادلة التحويل الرياضية العكسية المتقدمة (Cross-Rate Currency Engine)
+        // تعتمد على تحويل العملة المصدر إلى ريال سعودي، ثم من الريال إلى العملة المقابلة بدقة متناهية
+        function performCalculation() {
+            const amount = parseFloat(amountInput.value);
+            if (isNaN(amount) || amount <= 0) {
+                resultDisplay.innerText = "0.00";
+                return;
+            }
+
+            const from = fromCurrencySelect.value;
+            const to = toCurrencySelect.value;
+
+            // الحساب العكسي الدقيق:
+            // بما أن الأسعار مخزنة بقيمة (1 ريال = X من العملة الأجنبية)
+            // فإن القيمة بالريال = المبلغ / سعر صرف العملة المصدر
+            // النتيجة النهائية = القيمة بالريال * سعر صرف العملة المستهدفة
+            const rateFromSAR = sarExchangeRates[from];
+            const rateToSAR = sarExchangeRates[to];
+
+            const result = (amount / rateFromSAR) * rateToSAR;
+            
+            // حساب سعر الصرف الفردي المباشر للعرض التوضيحي
+            const singleCrossRate = (1 / rateFromSAR) * rateToSAR;
+
+            // التحديث الآمن على شاشة العرض بالأرقام الإنجليزية الصرفة 100% لسهولة القراءة والاحترافية
+            resultDisplay.innerText = result.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            resultSymbol.innerText = to;
+            rateSummaryText.innerText = `1 ${from} = ${singleCrossRate.toFixed(4)} ${to}`;
+        }
+
+        // 4. بناء لوحة التحكم السريعة لأسعار الصرف الفورية أسفل الشاشة
+        function renderFavoritesDashboard() {
+            favoritesContainer.innerHTML = '';
+            
+            const currentBase = fromCurrencySelect.value || 'SAR';
+            const baseRateInSAR = sarExchangeRates[currentBase];
+
+            favoriteCurrencies.forEach(currencyCode => {
+                // تخطي عرض نفس العملة الأساسية المختارة لعدم التكرار
+                if (currencyCode === currentBase) return;
+
+                const targetRateInSAR = sarExchangeRates[currencyCode];
+                // حساب قيمة العملة بالنسبة للعملة الأساسية الحالية
+                const crossRate = (1 / baseRateInSAR) * targetRateInSAR;
+                const arabicName = currencyArabicNames[currencyCode] || 'عملة أجنبية';
+
+                const card = document.createElement('div');
+                card.className = "flex justify-between items-center p-3.5 bg-gray-50/70 hover:bg-emerald-50/40 border border-gray-100 rounded-2xl transition-all group duration-300";
+                card.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="font-bold text-gray-900 font-number text-sm tracking-wide">${currencyCode}</span>
+                        <span class="text-[11px] text-gray-400 group-hover:text-emerald-700 transition-colors">${arabicName}</span>
+                    </div>
+                    <div class="text-left flex flex-col items-end">
+                        <span class="font-number font-bold text-emerald-700 text-md tracking-tight">${crossRate.toFixed(4)}</span>
+                        <span class="text-[9px] text-gray-400 font-number uppercase">مقابل 1 ${currentBase}</span>
+                    </div>
+                `;
+                favoritesContainer.appendChild(card);
+            });
+        }
+
+        // 5. الاستماع للأحداث والتحكم في مدخلات التفاعل (Event Listeners)
+        amountInput.addEventListener('input', performCalculation);
+        fromCurrencySelect.addEventListener('change', () => {
+            performCalculation();
+            renderFavoritesDashboard(); // تحديث الجدول بناء على العملة الأساسية الجديدة
+        });
+        toCurrencySelect.addEventListener('change', performCalculation);
+
+        // زر العكس السريع للمقاعد (Swap)
+        swapBtn.addEventListener('click', () => {
+            const temp = fromCurrencySelect.value;
+            fromCurrencySelect.value = toCurrencySelect.value;
+            toCurrencySelect.value = temp;
+            performCalculation();
+            renderFavoritesDashboard();
+        });
+
+        // تشغيل وإغلاق نافذة إضافة العملات (Modal)
+        openModalBtn.addEventListener('click', () => currencyModal.classList.remove('hidden'));
+        const hideModal = () => currencyModal.classList.add('hidden');
+        closeModalX.addEventListener('click', hideModal);
+        addCurrencyCancel.addEventListener('click', hideModal);
+
+        // تأكيد إضافة العملة الجديدة من المودال للقائمة المفضلة
+        addCurrencyConfirm.addEventListener('click', () => {
+            const selectedCurrency = allCurrenciesDropdown.value;
+            if (selectedCurrency && !favoriteCurrencies.includes(selectedCurrency)) {
+                favoriteCurrencies.push(selectedCurrency);
+                // حفظ الاختيار محلياً ليبقى ثابتاً للمستخدم عند إعادة الفتح
+                localStorage.setItem('yousef_favs', JSON.stringify(favoriteCurrencies));
+                
+                buildCurrencySelectors();
+                performCalculation();
+                renderFavoritesDashboard();
+            }
+            hideModal();
+        });
+
+        // انطلاق تشغيل التطبيق التلقائي فور تحميل الصفحة
+        window.addEventListener('DOMContentLoaded', fetchExchangeData);
+    </script>
+</body>
+</html>
