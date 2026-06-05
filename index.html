@@ -43,7 +43,7 @@
         <div class="max-w-xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <!-- شعار التطبيق المرفق -->
-                <img src="logo.png" alt="شعار يوسف أفندي" class="w-12 h-12 object-contain bg-white rounded-xl p-1 shadow-inner onerror-fallback" onerror="this.src='https://placehold.co/100x100?text=Yousef'">
+                <img src="logo.png" alt="شعار يوسف أفندي" class="w-12 h-12 object-contain bg-white rounded-xl p-1 shadow-inner" onerror="this.src='https://placehold.co/100x100?text=Yousef'">
                 <div>
                     <h1 class="text-xl font-bold tracking-wide">يوسف أفندي</h1>
                     <p class="text-[10px] text-emerald-300 font-number tracking-wider uppercase">Yousef Effendi Premium</p>
@@ -166,36 +166,18 @@
 
     <!-- كود البرمجة والذكاء الاصطناعي الخاص بالتطبيق -->
     <script>
-        // الرابط الأساسي المستقر والمدعوم عالمياً (الريال السعودي هو حجر الأساس للربط والمزامنة الشاملة)
         const API_URL = "https://open.er-api.com/v6/latest/SAR";
-        
-        // العملات الافتراضية المحددة في الطلب
         let favoriteCurrencies = ['SAR', 'USD', 'EUR', 'GBP', 'BAM'];
-        
-        // قاعدة البيانات المحلية لأسعار الصرف مقابل الريال السعودي (SAR)
         let sarExchangeRates = { "SAR": 1.0, "USD": 0.2666, "EUR": 0.2452, "GBP": 0.2095, "BAM": 0.4796 };
 
-        // القاموس العربي لأسماء العملات للواجهة الاحترافية
         const currencyArabicNames = {
-            'SAR': 'ريال سعودي',
-            'USD': 'دولار أمريكي',
-            'EUR': 'يورو أوروبي',
-            'GBP': 'جنيه إسترليني',
-            'BAM': 'مارك بوسني',
-            'AED': 'درهم إماراتي',
-            'KWD': 'دينار كويتي',
-            'BHD': 'دينار بحريني',
-            'OMR': 'ريال عماني',
-            'QAR': 'ريال قطري',
-            'EGP': 'جنيه مصري',
-            'TRY': 'ليرة تركية',
-            'CAD': 'دولار كندي',
-            'AUD': 'دولار أسترالي',
-            'JPY': 'ين ياباني',
-            'CNY': 'يوان صيني'
+            'SAR': 'ريال سعودي', 'USD': 'دولار أمريكي', 'EUR': 'يورو أوروبي',
+            'GBP': 'جنيه إسترليني', 'BAM': 'مارك بوسني', 'AED': 'درهم إماراتي',
+            'KWD': 'دينار كويتي', 'BHD': 'دينار بحريني', 'OMR': 'ريال عماني',
+            'QAR': 'ريال قطرري', 'EGP': 'جنيه مصري', 'TRY': 'ليرة تركية',
+            'CAD': 'دولار كندي', 'AUD': 'دولار أسترالي', 'JPY': 'ين ياباني', 'CNY': 'يوان صيني'
         };
 
-        // ربط عناصر واجهة المستخدم بالمتغيرات البرمجية
         const amountInput = document.getElementById('amount-input');
         const fromCurrencySelect = document.getElementById('from-currency');
         const toCurrencySelect = document.getElementById('to-currency');
@@ -217,30 +199,23 @@
         const addCurrencyConfirm = document.getElementById('add-currency-confirm');
         const allCurrenciesDropdown = document.getElementById('all-currencies-dropdown');
 
-        // استرجاع المفضلات المخزنة مسبقاً إن وجدت لراحة المستخدم
         if (localStorage.getItem('yousef_favs')) {
             favoriteCurrencies = JSON.parse(localStorage.getItem('yousef_favs'));
         }
 
-        // 1. وظيفة جلب البيانات من الـ API والتعامل الفوري الذكي مع الأوفلاين
         async function fetchExchangeData() {
             try {
                 const response = await fetch(API_URL);
                 if (!response.ok) throw new Error("فشل استجابة السيرفر");
-                
                 const data = await response.json();
                 sarExchangeRates = data.rates;
                 
-                // حفظ النسخة الأحدث محلياً في ذاكرة التخزين الداخلي للمتصفح/الجوال للعمل بدون إنترنت
                 localStorage.setItem('yousef_cached_rates', JSON.stringify(sarExchangeRates));
                 localStorage.setItem('yousef_cached_time', new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
-                
                 setNetworkUI(true);
             } catch (error) {
-                console.warn("تنبيه: تم تفعيل وضع العمل بدون إنترنت (Offline Mode).");
                 const localRates = localStorage.getItem('yousef_cached_rates');
                 const localTime = localStorage.getItem('yousef_cached_time');
-                
                 if (localRates) {
                     sarExchangeRates = JSON.parse(localRates);
                     setNetworkUI(false, localTime || "Saved Cache");
@@ -248,13 +223,11 @@
                     setNetworkUI(false, "No Connection");
                 }
             }
-            
             buildCurrencySelectors();
             performCalculation();
             renderFavoritesDashboard();
         }
 
-        // تحديث مظهر مؤشر الشبكة (لايف أخضر / أوفلاين برتقالي)
         function setNetworkUI(isOnline, timeString = '') {
             if (isOnline) {
                 networkStatus.className = "text-xs bg-emerald-950/60 border border-emerald-500/30 px-3 py-1.5 rounded-full flex items-center gap-2";
@@ -269,9 +242,7 @@
             }
         }
 
-        // 2. بناء قوائم الاختيار (تلقائياً وبداية ذكية بالريال السعودي)
         function buildCurrencySelectors() {
-            // حفظ الاختيارات الحالية للمستخدم حتى لا تضيع عند التحديث
             const currentFrom = fromCurrencySelect.value || 'SAR';
             const currentTo = toCurrencySelect.value || 'USD';
 
@@ -279,31 +250,21 @@
             toCurrencySelect.innerHTML = '';
             allCurrenciesDropdown.innerHTML = '';
 
-            // تصنيف وتعبئة العملات المتاحة بالترتيب
             Object.keys(sarExchangeRates).sort().forEach(currencyCode => {
                 const arabicName = currencyArabicNames[currencyCode] || 'عملة دولية أجنبية';
                 const optionText = `${currencyCode} - ${arabicName}`;
                 
-                // إضافة القائمة المفضلة للمستخدم في حاسبة التحويل
                 if (favoriteCurrencies.includes(currencyCode)) {
-                    const optFrom = new Option(optionText, currencyCode);
-                    const optTo = new Option(optionText, currencyCode);
-                    fromCurrencySelect.add(optFrom);
-                    toCurrencySelect.add(optTo);
+                    fromCurrencySelect.add(new Option(optionText, currencyCode));
+                    toCurrencySelect.add(new Option(optionText, currencyCode));
                 }
-
-                // إضافة كافة عملات العالم للمودال لإتاحة حرية التوسيع والزيادة
-                const optModal = new Option(optionText, currencyCode);
-                allCurrenciesDropdown.add(optModal);
+                allCurrenciesDropdown.add(new Option(optionText, currencyCode));
             });
 
-            // تعيين الاختيارات وتأكيد البداية بالريال السعودي كما طلبتم
             fromCurrencySelect.value = currentFrom;
             toCurrencySelect.value = currentTo;
         }
 
-        // 3. معادلة التحويل الرياضية العكسية المتقدمة (Cross-Rate Currency Engine)
-        // تعتمد على تحويل العملة المصدر إلى ريال سعودي، ثم من الريال إلى العملة المقابلة بدقة متناهية
         function performCalculation() {
             const amount = parseFloat(amountInput.value);
             if (isNaN(amount) || amount <= 0) {
@@ -314,37 +275,25 @@
             const from = fromCurrencySelect.value;
             const to = toCurrencySelect.value;
 
-            // الحساب العكسي الدقيق:
-            // بما أن الأسعار مخزنة بقيمة (1 ريال = X من العملة الأجنبية)
-            // فإن القيمة بالريال = المبلغ / سعر صرف العملة المصدر
-            // النتيجة النهائية = القيمة بالريال * سعر صرف العملة المستهدفة
             const rateFromSAR = sarExchangeRates[from];
             const rateToSAR = sarExchangeRates[to];
-
             const result = (amount / rateFromSAR) * rateToSAR;
-            
-            // حساب سعر الصرف الفردي المباشر للعرض التوضيحي
             const singleCrossRate = (1 / rateFromSAR) * rateToSAR;
 
-            // التحديث الآمن على شاشة العرض بالأرقام الإنجليزية الصرفة 100% لسهولة القراءة والاحترافية
             resultDisplay.innerText = result.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             resultSymbol.innerText = to;
             rateSummaryText.innerText = `1 ${from} = ${singleCrossRate.toFixed(4)} ${to}`;
         }
 
-        // 4. بناء لوحة التحكم السريعة لأسعار الصرف الفورية أسفل الشاشة
         function renderFavoritesDashboard() {
             favoritesContainer.innerHTML = '';
-            
             const currentBase = fromCurrencySelect.value || 'SAR';
             const baseRateInSAR = sarExchangeRates[currentBase];
 
             favoriteCurrencies.forEach(currencyCode => {
-                // تخطي عرض نفس العملة الأساسية المختارة لعدم التكرار
                 if (currencyCode === currentBase) return;
 
                 const targetRateInSAR = sarExchangeRates[currencyCode];
-                // حساب قيمة العملة بالنسبة للعملة الأساسية الحالية
                 const crossRate = (1 / baseRateInSAR) * targetRateInSAR;
                 const arabicName = currencyArabicNames[currencyCode] || 'عملة أجنبية';
 
@@ -364,15 +313,13 @@
             });
         }
 
-        // 5. الاستماع للأحداث والتحكم في مدخلات التفاعل (Event Listeners)
         amountInput.addEventListener('input', performCalculation);
         fromCurrencySelect.addEventListener('change', () => {
             performCalculation();
-            renderFavoritesDashboard(); // تحديث الجدول بناء على العملة الأساسية الجديدة
+            renderFavoritesDashboard();
         });
         toCurrencySelect.addEventListener('change', performCalculation);
 
-        // زر العكس السريع للمقاعد (Swap)
         swapBtn.addEventListener('click', () => {
             const temp = fromCurrencySelect.value;
             fromCurrencySelect.value = toCurrencySelect.value;
@@ -381,20 +328,16 @@
             renderFavoritesDashboard();
         });
 
-        // تشغيل وإغلاق نافذة إضافة العملات (Modal)
         openModalBtn.addEventListener('click', () => currencyModal.classList.remove('hidden'));
         const hideModal = () => currencyModal.classList.add('hidden');
         closeModalX.addEventListener('click', hideModal);
         addCurrencyCancel.addEventListener('click', hideModal);
 
-        // تأكيد إضافة العملة الجديدة من المودال للقائمة المفضلة
         addCurrencyConfirm.addEventListener('click', () => {
             const selectedCurrency = allCurrenciesDropdown.value;
             if (selectedCurrency && !favoriteCurrencies.includes(selectedCurrency)) {
                 favoriteCurrencies.push(selectedCurrency);
-                // حفظ الاختيار محلياً ليبقى ثابتاً للمستخدم عند إعادة الفتح
                 localStorage.setItem('yousef_favs', JSON.stringify(favoriteCurrencies));
-                
                 buildCurrencySelectors();
                 performCalculation();
                 renderFavoritesDashboard();
@@ -402,7 +345,6 @@
             hideModal();
         });
 
-        // انطلاق تشغيل التطبيق التلقائي فور تحميل الصفحة
         window.addEventListener('DOMContentLoaded', fetchExchangeData);
     </script>
 </body>
